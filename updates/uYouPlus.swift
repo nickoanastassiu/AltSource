@@ -119,7 +119,12 @@ update.localizedDescription = localizedDescription
 update.size = Int(getAppSize(appPath: appPath))
 update.downloadURL = downloadURL
 
-source.apps[0].versions.insert(update, at: 0)
+for (index, app) in source.apps.enumerated() {
+    if app.bundleIdentifier == "com.google.ios.youtube" {
+        source.apps[index].versions.insert(update, at: 0)
+        break
+    }
+}
 
 let data = try! JSONEncoder().encode(source)
 try! data.write(to: URL(fileURLWithPath: sourcePath))
