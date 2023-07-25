@@ -4,7 +4,7 @@
     "apps": [
         {
             "name": "uYou+",
-            "bundleIdentifier": "com.example.myapp",
+            "bundleIdentifier": "com.google.ios.youtube",
             "developerName": "MiRO92",
             "localizedDescription": "This is an awesome app only available on AltStore.",
             "iconURL": "https://static.wikia.nocookie.net/ipod/images/e/e7/YouTube_iOS_2019.png",
