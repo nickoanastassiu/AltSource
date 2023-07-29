@@ -5,11 +5,12 @@ import Foundation
 let localizedDescription = CommandLine.arguments[0]
 // Download URL - ${{ env.artifact_url }}
 let downloadURL = CommandLine.arguments[1]
-// Current Directory - ${{ echo "$PWD" }}
-let currentDirectory = CommandLine.arguments[2]
 
-let appPath = currentDirectory.appending("/Payload/YouTube.app")
-let sourcePath = currentDirectory.appending("/AltSource/source.json")
+// Current Directory
+let currentDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+
+let appPath = currentDirectory.appending(path: "/Payload/YouTube.app")
+let sourcePath = currentDirectory.appending(path: "/AltSource/source.json")
 
 struct InfoPlist: Decodable {
     var CFBundleShortVersionString: String
@@ -92,31 +93,31 @@ func getVersion(path: String) -> String? {
 }
 
 func getAppSize(appPath: String) -> Int64 {
-  let fileManager = FileManager.default
-  let attributes = try? fileManager.attributesOfItem(atPath: appPath)
-  let fileSize = attributes?[FileAttributeKey.size] as? Int64
-  var totalSize = fileSize ?? 0
-
-  let contents = try? fileManager.contentsOfDirectory(atPath: appPath)
-  if contents != nil {
-    for content in contents! {
-      let contentPath = appPath.appending("/\(content)")
-      let contentSize = getAppSize(appPath: contentPath)
-      totalSize += contentSize
+    let fileManager = FileManager.default
+    let attributes = try? fileManager.attributesOfItem(atPath: appPath)
+    let fileSize = attributes?[FileAttributeKey.size] as? Int64
+    var totalSize = fileSize ?? 0
+    
+    let contents = try? fileManager.contentsOfDirectory(atPath: appPath)
+    if contents != nil {
+        for content in contents! {
+            let contentPath = appPath.appending("/\(content)")
+            let contentSize = getAppSize(appPath: contentPath)
+            totalSize += contentSize
+        }
     }
-  }
-
-  return totalSize
+    
+    return totalSize
 }
 
-var source = try! JSONDecoder().decode(Source.self, from: Data(contentsOf: URL(fileURLWithPath: sourcePath)))
+var source = try! JSONDecoder().decode(Source.self, from: Data(contentsOf: sourcePath))
 
 var update: Source.App.Update = .init(version: "", date: "", localizedDescription: "", downloadURL: "", size: 0)
 
 update.date = Date.now.ISO8601Format()
-update.version = getVersion(path: appPath)!
+update.version = getVersion(path: appPath.absoluteString)!
 update.localizedDescription = localizedDescription
-update.size = Int(getAppSize(appPath: appPath))
+update.size = Int(getAppSize(appPath: appPath.absoluteString))
 update.downloadURL = downloadURL
 
 for (index, app) in source.apps.enumerated() {
@@ -127,4 +128,4 @@ for (index, app) in source.apps.enumerated() {
 }
 
 let data = try! JSONEncoder().encode(source)
-try! data.write(to: URL(fileURLWithPath: sourcePath))
+try! data.write(to: sourcePath)
