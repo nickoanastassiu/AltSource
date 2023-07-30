@@ -28,7 +28,7 @@ let localizedDescription = CommandLine.arguments[1]
 let uYouPlusVersion = CommandLine.arguments[2]
 
 // Current Directory
-let currentDirectory = URL(filePath: FileManager.default.currentDirectoryPath)
+let currentDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 let path = currentDirectory.appendingPathComponent("Payload/YouTube.app")
 
 let appPath = currentDirectory.append(path: "/Payload/YouTube.app")
@@ -142,7 +142,7 @@ update.localizedDescription = localizedDescription
 update.size = Int(getAppSize(appPath: appPath))
 update.downloadURL = "https://github.com/nickoanastassiu/uYouPlus/releases/download/\(uYouPlusVersion)/uYouPlus.ipa"
 
-for (index, app) in source.apps.enumerated() {
+for (index, app) in Array(source.apps).enumerated() {
     if app.bundleIdentifier == "com.google.ios.youtube" {
         source.apps[index].versions.insert(update, at: 0)
         break
