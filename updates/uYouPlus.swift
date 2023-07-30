@@ -135,7 +135,7 @@ var source = try! JSONDecoder().decode(Source.self, from: Data(contentsOf: sourc
 
 var update: Source.App.Update = .init(version: "", date: "", localizedDescription: "", downloadURL: "", size: 0)
 
-update.date = Date.now.ISO8601Format()
+update.date = Date.now.ISO8601Format
 update.version = getVersion(path: appPath.absoluteString)!
 update.localizedDescription = localizedDescription
 update.size = Int(getAppSize(appPath: appPath.absoluteString))
