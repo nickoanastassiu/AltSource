@@ -6,7 +6,7 @@ import Foundation
 extension Date {
     var ISO8601Format: String {
         let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
+        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime, .withTimeZone]
         return formatter.string(from: self)
     }
     
@@ -23,12 +23,13 @@ extension URL {
 
 // MARK: - Arguments
 // Description
-let localizedDescription = CommandLine.arguments[0]
+let localizedDescription = CommandLine.arguments[1]
 // uYou+ Version
-let uYouPlusVersion = CommandLine.arguments[1]
+let uYouPlusVersion = CommandLine.arguments[2]
 
 // Current Directory
-let currentDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+let currentDirectory = URL(filePath: FileManager.default.currentDirectoryPath)
+let path = currentDirectory.appendingPathComponent("Payload/YouTube.app")
 
 let appPath = currentDirectory.append(path: "/Payload/YouTube.app")
 let sourcePath = currentDirectory.append(path: "/AltSource/source.json")
@@ -103,9 +104,9 @@ struct Source: Codable {
 }
 
 
-func getVersion(path: String) -> String? {
+func getVersion(path: URL) -> String? {
     do {
-        let infoPlist = try PropertyListDecoder().decode(InfoPlist.self, from: Data(contentsOf: URL(fileURLWithPath: path.appending("/Info.plist"))))
+        let infoPlist = try PropertyListDecoder().decode(InfoPlist.self, from: Data(contentsOf: path.append(path: "/Info.plist")))
         return infoPlist.CFBundleShortVersionString
     } catch {
         print(error)
@@ -113,16 +114,16 @@ func getVersion(path: String) -> String? {
     }
 }
 
-func getAppSize(appPath: String) -> Int64 {
+func getAppSize(appPath: URL) -> Int64 {
     let fileManager = FileManager.default
-    let attributes = try? fileManager.attributesOfItem(atPath: appPath)
+    let attributes = try? fileManager.attributesOfItem(atPath: appPath.path)
     let fileSize = attributes?[FileAttributeKey.size] as? Int64
     var totalSize = fileSize ?? 0
     
-    let contents = try? fileManager.contentsOfDirectory(atPath: appPath)
+    let contents = try? fileManager.contentsOfDirectory(atPath: appPath.path)
     if contents != nil {
         for content in contents! {
-            let contentPath = appPath.appending("/\(content)")
+            let contentPath = appPath.append(path: "/\(content)")
             let contentSize = getAppSize(appPath: contentPath)
             totalSize += contentSize
         }
@@ -136,10 +137,9 @@ var source = try! JSONDecoder().decode(Source.self, from: Data(contentsOf: sourc
 var update: Source.App.Update = .init(version: "", date: "", localizedDescription: "", downloadURL: "", size: 0)
 
 update.date = Date.now.ISO8601Format
-update.version = getVersion(path: appPath.absoluteString)!
-// update.localizedDescription = localizedDescription
-update.localizedDescription = "New update"
-update.size = Int(getAppSize(appPath: appPath.absoluteString))
+update.version = getVersion(path: appPath)!
+update.localizedDescription = localizedDescription
+update.size = Int(getAppSize(appPath: appPath))
 update.downloadURL = "https://github.com/nickoanastassiu/uYouPlus/releases/download/\(uYouPlusVersion)/uYouPlus.ipa"
 
 for (index, app) in source.apps.enumerated() {
