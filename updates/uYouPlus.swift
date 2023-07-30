@@ -149,5 +149,7 @@ for (index, app) in Array(source.apps).enumerated() {
     }
 }
 
-let data = try! JSONEncoder().encode(source)
+var encoder = JSONEncoder()
+encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+let data = try! encoder.encode(source)
 try! data.write(to: sourcePath)
