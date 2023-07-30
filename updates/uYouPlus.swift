@@ -40,25 +40,25 @@ struct InfoPlist: Decodable {
 struct Source: Codable {
     var name: String
     var identifier: String
-    var subtitle: String
-    var description: String
-    var iconURL: String
-    var headerURL: String
-    var website: String
-    var tintColor: String
-    var featuredApps: [String]
+    var subtitle: String?
+    var description: String?
+    var iconURL: String?
+    var headerURL: String?
+    var website: String?
+    var tintColor: String?
+    var featuredApps: [String]?
     var apps: [App]
-    var news: [News]
+    var news: [News]?
     
     struct App: Codable {
         var name: String
         var bundleIdentifier: String
         var developerName: String
-        var subtitle: String
+        var subtitle: String?
         var localizedDescription: String
         var iconURL: String
-        var tintColor: String
-        var screenshotURLs: [String]
+        var tintColor: String?
+        var screenshotURLs: [String]?
         var versions: [Update]
         var appPermissions: AppPermissions
         
