@@ -1,16 +1,37 @@
 import Foundation
 
+// Script runs on macOS 11 Big Sur
+
+// MARK: - Extensions for macOS 11
+extension Date {
+    var ISO8601Format: String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
+        return formatter.string(from: self)
+    }
+    
+    static var now: Date {
+        return Date()
+    }
+}
+
+extension URL {
+    func append(path: String) -> URL {
+        return self.appendingPathComponent(path)
+    }
+}
+
 // MARK: - Arguments
-// Description - ${{ github.event.head_commit.message }}
+// Description
 let localizedDescription = CommandLine.arguments[0]
-// Download URL - ${{ env.artifact_url }}
-let downloadURL = CommandLine.arguments[1]
+// uYou+ Version
+let uYouPlusVersion = CommandLine.arguments[1]
 
 // Current Directory
 let currentDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 
-let appPath = currentDirectory.appending(path: "/Payload/YouTube.app")
-let sourcePath = currentDirectory.appending(path: "/AltSource/source.json")
+let appPath = currentDirectory.append(path: "/Payload/YouTube.app")
+let sourcePath = currentDirectory.append(path: "/AltSource/source.json")
 
 struct InfoPlist: Decodable {
     var CFBundleShortVersionString: String
@@ -118,7 +139,7 @@ update.date = Date.now.ISO8601Format()
 update.version = getVersion(path: appPath.absoluteString)!
 update.localizedDescription = localizedDescription
 update.size = Int(getAppSize(appPath: appPath.absoluteString))
-update.downloadURL = downloadURL
+update.downloadURL = "https://github.com/nickoanastassiu/uYouPlus/releases/download/\(uYouPlusVersion)/uYouPlus.ipa"
 
 for (index, app) in source.apps.enumerated() {
     if app.bundleIdentifier == "com.google.ios.youtube" {
