@@ -137,7 +137,8 @@ var update: Source.App.Update = .init(version: "", date: "", localizedDescriptio
 
 update.date = Date.now.ISO8601Format
 update.version = getVersion(path: appPath.absoluteString)!
-update.localizedDescription = localizedDescription
+// update.localizedDescription = localizedDescription
+update.localizedDescription = "New update"
 update.size = Int(getAppSize(appPath: appPath.absoluteString))
 update.downloadURL = "https://github.com/nickoanastassiu/uYouPlus/releases/download/\(uYouPlusVersion)/uYouPlus.ipa"
 
