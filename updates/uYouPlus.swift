@@ -150,6 +150,6 @@ for (index, app) in Array(source.apps).enumerated() {
 }
 
 var encoder = JSONEncoder()
-encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+encoder.outputFormatting = [.withoutEscapingSlashes]
 let data = try! encoder.encode(source)
 try! data.write(to: sourcePath)
